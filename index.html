@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timeline</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/gh/GedMarc/bootstrap4-dialog/dist/css/bootstrap-dialog.css" rel="stylesheet"
+      type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+      integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
+      crossorigin="anonymous" />
+      <link rel="stylesheet" href="../src/style.css" />
+
+  </head>
+  <body>
+    <div class="container-fluid p-0">
+      <h1 class="bg-secondary m-0 p-2 text-white">活動紀錄 Timeline</h1>
+      <div id="btns" class="w-25 toolbar__btns--box d-flex justify-content-between">
+        <button type="button" class="btn shadow border-secondary btn-light rounded-circle " id="sortUp">
+          ▲
+        </button>
+        <button type="button" class="btn shadow border-secondary btn-light rounded-circle" id="sortDown">
+          ▼
+        </button>
+        <button type="button" class="btn shadow border-secondary btn-light rounded-circle" data-toggle="modal"
+          data-target="#addModal" id="addBtn">
+          +
+        </button>
+      </div>
+      <!-- 新增和編輯modal -->
+      <div class="modal fade" id="addModal" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+          <div class="modal-content">
+            <div class="modal-header modal__header">
+              <h5 class="modal-title" id="addModalLabel">新增</h5>
+              <button type="button" class="close closeModalX" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" class="text-white">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="addForm" name="addForm" onsubmit="return validateForm()">
+                <label for="addDate"></label>
+                <p id="addDate">2021-03-03</p>
+              </form></br>
+              <label for="activityTitle">活動標題</label>：<br /><input type="text" id="activityTitle" class="card__inputform" />
+              <div class="errorActivityTitle text-danger"></div>
+              <br />
+              <label for="name">主辦人</label>：<br /><input type="text" id="name" class="card__inputform" />
+              <div class="errorName text-danger"></div>
+              <br />
+              <label for="email">電子郵件</label>：<br /><input type="text" id="email" class="card__inputform" />
+              <div class="errorEmail text-danger"></div>
+              <br />
+              <label for="activityContent">活動紀錄</label>：<br /><textarea type="text" id="activityContent"
+                class="card__inputform"></textarea>
+              <div class="errorActivity text-danger"></div>
+              <br />
+              <input id="rowID" type="hidden" value="" />
+              </form>
+            </div>
+            <div class="modal-footer">
+              <!-- data-dimiss="modal" 關閉 modal -->
+              <button type="button" class="btn border-secondary" data-dismiss="modal" id="closeModal">
+                Close
+              </button>
+              <button id="addSubmit" type="button" class="btn btn-dark border-secondary">
+                Save
+              </button>
+              <button id="saveButton" type="button" class="btn btn-dark border-secondary">
+                Save
+              </button>
+            </div>
+          </div>
+          </div>
+      </div>
+    </div>
+    <div class="mt-5 d-flex flex-column justify-content-center" style="width: 1000px; margin: auto;">
+      <div class="cards flex-column d-flex justify-content-between">
+      </div>
+      <div id="loadingBtnBox" class="d-flex  justify-content-center">
+        <button type="button" id="loadingBtn" class="btn bottom__btn--loading">Load
+          More</button>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/GedMarc/bootstrap4-dialog/dist/js/bootstrap-dialog.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script type="module">
+      import ActivityTimeline from "./src/index.js";
+      import { DATA } from "./src/data.js";
+      const currentDate = dayjs().add(1, "day").format("YYYY-MM-DD");
+      // 宣告驗證規則
+      let emailRule =
+        /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+      let phoneRule = /^09\d{2}-\d{6}$/;
+
+      $(function () {
+        let demo = new ActivityTimeline($(".cards"))
+        const optionsContent =  {
+          data: DATA,
+          // 是否顯示自訂筆數
+          // 預設卡片顯示數
+          perItem: 4,
+          // 更新單筆欄位資料
+          onEdit: function ( rowData ) {
+            $( "#rowID" ).val( rowData.id );
+            $( "#name" ).val( rowData.name );
+            $( "#email" ).val( rowData.email );
+            $( "#activityTitle" ).val( rowData.title );
+            $( "#activityContent" ).val( rowData.bref );
+            $( "#addDate" ).text( rowData.datetime );
+            $( "#addModal" ).modal( "show" );
+            $( "#addBtn" ).on( "click", function ( e ) {
+              e.preventDefault();
+              $( "#addModal" ).modal( "show" );
+            } );
+
+            $( "#closeModal,.closeModalX" ).on( "click", function () {
+              // 關閉modal後清除rowData.id 避免修改一個以上data
+              rowData.id = ""
+            } )
+
+            $( "#saveButton" ).click( function ( e ) {
+              e.preventDefault();
+              // 驗證結果
+              let emailResult = emailRule.test( $( "#email" ).val() );
+              // 驗證
+              if ( $( "#activityTitle" ).val() == "" ) $( ".errorActivityTitle" ).text( "必填" );
+              else $( ".errorActivityTitle" ).text( "" );
+              if ( $( "#name" ).val() == "" ) $( ".errorName" ).text( "必填" );
+              else $( ".errorName" ).text( "" );
+              if ( !emailResult ) $( ".errorEmail" ).text( "必填/email格式驗證" );
+              else $( ".errorEmail" ).text( "" );
+
+              const feedbackData = {
+                id: $( "#rowID" ).val().toString(),
+                title: $( "#activityTitle" ).val(),
+                name: $( "#name" ).val(),
+                email: $( "#email" ).val(),
+                bref: $( "#activityContent" ).val(),
+                datetime: rowData.datetime,
+              };
+              // 如果驗證通過，編輯資料
+              if ( $( "#name,#activityTitle" ).val() !== "" && emailResult ) {
+                if ( rowData.id == "" ) return
+
+                    demo.updateData( feedbackData, response.data );
+
+                $( "#addModal" ).modal( "hide" );
+                // 關閉modal後清除rowData.id 避免修改一個以上data
+                rowData.id = ""
+              }
+            } );
+            $( "#addModalLabel" ).text( `編輯` );
+
+            if ( $( "#addSubmit" ) ) {
+              $( "#addSubmit" ).hide();
+              $( "#saveButton" ).show();
+            }
+          },
+          // 刪除單筆欄位資料
+          onDelete: function ( id ) {
+            if ( $.isNumeric( id ) ) {
+                  demo.removeDataByID( response.data.id );
+            }
+          },
+          // 新增單筆資料
+          onAdd: function ( data ) {
+                demo.addData( data );
+          }
+        };
+/*
+ * 動態設置 ActivityTimeline 選項參數
+ * @param {Object} [options] - 更新預設參數
+ */
+
+ demo.setOptions( optionsContent );
+
+
+// 新增
+$( "#addSubmit" ).on( "click", function () {
+  let emailResult = emailRule.test( $( "#email" ).val() );
+  // 宣告day是當下時間再加一天
+  let currentDate = dayjs().format( "YYYY/MM/DD" );
+  demo.sort( 'asc' )
+
+  // 驗證
+  if ( $( "#activityTitle" ).val() == "" ) $( ".errorActivityTitle" ).text( "必填" );
+  else $( ".errorActivityTitle" ).text( "" );
+  if ( $( "#name" ).val() == "" ) $( ".errorName" ).text( "必填" );
+  else $( ".errorName" ).text( "" );
+  if ( !emailResult ) $( ".errorEmail" ).text( "必填/email格式驗證" );
+  else $( ".errorEmail" ).text( "" );
+  
+  // 如果驗證都通過，提交表單
+  if ( $( "#name,#activityTitle" ).val() !== "" && emailResult ) {
+    demo.refetchTable( demo.options.data )
+    let count = parseInt( demo.options.data[demo.options.data.length - 1].id ) + 1;
+    demo.options.onAdd( {
+      id: count,
+      title: $( "#activityTitle" ).val(),
+      name: $( "#name" ).val(),
+      email: $( "#email" ).val(),
+      bref: $( "#activityContent" ).val(),
+      datetime: currentDate,
+    } ) && $( "#addModal" ).modal( "toggle" );
+    count++;
+  }
+
+} );
+// 點擊新增時彈框input清空
+$( "#addBtn" ).on( "click", function ( e ) {
+  $( "#addDate" ).text( currentDate );
+  $( "#activityTitle,#name,#email,#activityContent" ).val( "" );
+
+  $( "#addModalLabel" ).text( `新增` );
+  $( "#addSubmit" ).show();
+  $( "#saveButton" ).hide();
+  $( ".errorName,.errorEmail,.errorActivity" ).text( "" );
+} )
+
+$( "#loadingBtn" ).attr( "data-perItem", "close" );
+// 點擊Load More按鈕
+$( "#loadingBtn" ).on( "click", function ( e ) {
+  let loadingBtnState = $( "#loadingBtn" ).attr( "data-perItem" );
+  let origPerItem = demo.options.perItem;
+  if ( loadingBtnState == 'close' ) {
+    origPerItem = demo.options.data.length
+    $( "#loadingBtn" ).attr( "data-perItem", "open" );
+  }
+  else {
+    origPerItem = demo.options.perItem
+    $( "#loadingBtn" ).attr( "data-perItem", "close" );
+  }
+  demo.refetchTable( demo.options.data, origPerItem )
+  demo.bind( demo.options )
+} )
+
+$( "#sortUp" ).on( "click", function ( e ) {
+  demo.sort( 'asc' )
+} )
+
+$( "#sortDown" ).on( "click", function ( e ) {
+  demo.sort( 'desc' )
+} )
+      });
+    </script>
+  </body>
+</html>

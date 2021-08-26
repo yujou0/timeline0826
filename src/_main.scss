@@ -1,0 +1,155 @@
+.card {
+  width: 350px;
+  border-radius: 20%;
+  border-radius: 10px;
+  background: $card-bgcolor;
+  border: none;
+  li {
+    list-style: none;
+  }
+  .card-title {
+    border-radius: 10px 10px 0px 0px;
+    height: 40px;
+  }
+  .card_body {
+    border-radius: 0px 0px 10px 10px;
+  }
+}
+
+.card:nth-child(odd) {
+  .card-title {
+    background-color: $leftside-headercolor;
+  }
+  .card-title::before {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 12px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent $leftside-headercolor;
+  }
+  .card_body::after {
+    content: "";
+    position: absolute;
+    left: 497px;
+    color: #fff;
+    background: #efefef;
+    width: 10px;
+    height: 350px;
+    z-index: -1;
+  }
+  .card_ball-show {
+    z-index: 1;
+    position: absolute;
+    right: -175px;
+    background: $leftside-headercolor;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    color: #fff;
+  }
+  .cardFooter {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.card:nth-child(even) {
+  left: 650px;
+  .card-title {
+    background-color: $rightside-headercolor;
+  }
+  .card-title::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 12px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 10px 6px 0px;
+    border-color: transparent $rightside-headercolor transparent transparent;
+  }
+
+  .card_body::after {
+    content: "";
+    position: absolute;
+    right: 492px;
+    color: #fff;
+    background: #efefef;
+    width: 10px;
+    height: 350px;
+    z-index: -1;
+  }
+  .card_ball-show {
+    z-index: 1;
+    position: absolute;
+    left: -170px;
+    background: $rightside-headercolor;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    color: #fff;
+  }
+  .cardFooter {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  }
+}
+
+.edit-btn {
+  background-color: $edit-btncolor;
+  color: $btn-text-color;
+}
+.delete-btn {
+  background-color: $delete-btncolor;
+  color: $btn-text-color;
+}
+.cardName,
+.cardEmail,
+.cardContent {
+  color: $maintext-color;
+  line-height: 40px;
+  font-family: 40px;
+}
+.cardDate {
+  color: $date-textcolor;
+}
+.card__hr {
+  width: 90%;
+  height: 1px;
+  border: none;
+  background-color: $card-linecolor;
+}
+.card__inputform{
+  width: 250px;
+}
+.bottom__btn--loading{
+  color: $card-linecolor;
+  background:$leftside-headercolor ;
+}
+.toolbar__btns--box{
+  left: 60%;
+  margin-top: -25px;
+  position: absolute;
+  button{
+    background-color: $rightside-headercolor;
+    width: 50px;
+    height: 50px;
+    color: $card-linecolor;
+    font-size: 30px;
+    line-height: 0px;
+    border: none;
+  }
+}
+.modal__header{
+  background-color: $rightside-headercolor;
+  color: $card-linecolor;
+}
