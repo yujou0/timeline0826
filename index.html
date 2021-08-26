@@ -150,8 +150,7 @@
               // 如果驗證通過，編輯資料
               if ( $( "#name,#activityTitle" ).val() !== "" && emailResult ) {
                 if ( rowData.id == "" ) return
-
-                    demo.updateData( feedbackData, response.data );
+                    demo.updateData( feedbackData, demo.options.data );
 
                 $( "#addModal" ).modal( "hide" );
                 // 關閉modal後清除rowData.id 避免修改一個以上data
@@ -168,7 +167,7 @@
           // 刪除單筆欄位資料
           onDelete: function ( id ) {
             if ( $.isNumeric( id ) ) {
-                  demo.removeDataByID( response.data.id );
+                  demo.removeDataByID( id );
             }
           },
           // 新增單筆資料

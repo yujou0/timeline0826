@@ -55,7 +55,6 @@ class ActivityTimeline {
      */
     function printCard(data) {
       $.each(data, function (key, item) {
-        console.log(item)
         let row = $(`<div class="card">
        <div class="card_body" id="${item.id}"><span class="card_ball-show">${item.id}</span></div></div>`);
         row.append(
@@ -182,7 +181,6 @@ removeDataByID(id) {
         options.data.splice(i, 1);
       }
     });
-    $("#DataTable_filter > label >input").val("");
     this.refetchTable(saveData);
     this.bind(options);
   }
